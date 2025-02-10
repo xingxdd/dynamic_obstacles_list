@@ -1,0 +1,40 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/wjh/sim_env/devel/include/**",
+        "/home/wjh/ME5413_Planning_Project-main/devel/include/**",
+        "/home/wjh/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/autonomous_flight/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/global_planner/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/map_generator/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/map_manager/include/**",
+        "/home/wjh/ME5413_Planning_Project-main/src/me5413_world/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/mockamap/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/Utils/multi_map_server/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/onboard_detector/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/Utils/pose_utils/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/Utils/quadrotor_msgs/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/so3_control/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/so3_quadrotor_simulator/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/time_optimizer/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/tracking_controller/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/trajectory_planner/include/**",
+        "/home/wjh/catkin_ws/src/CERLAB-UAV-Autonomy/uav_simulator/include/**",
+        "/home/wjh/sim_env/src/uav_simulator/Utils/uav_utils/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
