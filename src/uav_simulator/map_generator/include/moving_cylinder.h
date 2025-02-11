@@ -32,11 +32,10 @@ using namespace std;
 using namespace Eigen;
 Vector2d dynamic_count={0.0,0.0};//单个动态障碍物的坐标信息，暂存量
 int dynamic_number=0; //动态障碍物的数量
+int static_number=0;//静态障碍物的数量
 double matrix[6][2]={0.0};//各动态障碍物的坐标存储
-
+double matrix_static_position[6][2]={0.0};//多静态障碍物的位置坐标
 ///////////////////////////////////////////////////// end 1.0/////////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 namespace dynamic_map_objects {
@@ -112,6 +111,8 @@ class MovingCylinder {
   Vector2d update4(double delta);
   Vector2d update5(double delta);
   Vector2d update6(double delta);
+  
+  vector<Vector2d> obs_static_positong_exchange(); //静态坐标变换
 
   // 计算吸引力
   Vector2d calculate_attraction(const Vector2d& position, const Vector2d& goal, double attraction_coefficient) ;
@@ -236,6 +237,17 @@ void MovingCylinder::setMode(int m) {
 
 
 //////////////////////////////////////////////////start 4.0/////////////////////////////////////////////////////////////////////////////////////
+
+  vector<Vector2d> MovingCylinder::obs_static_positong_exchange() //静态坐标变换
+  {
+    vector<Vector2d> obstacles;
+      for(int i=1;i<=static_number;i++)
+      {
+        obstacles.push_back(Vector2d(matrix_static_position[i-1][0],matrix_static_position[i-1][1]));
+      }
+    return obstacles;
+  }
+
 // 计算吸引力
 Vector2d MovingCylinder::calculate_attraction(const Vector2d& position, const Vector2d& goal, double attraction_coefficient) {
     double distance = (position - goal).norm();  // 计算当前位置到目标位置的欧几里得距离
@@ -395,11 +407,11 @@ Vector2d MovingCylinder::update1(double delta) {
     {
       case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 2:goal_position.x()=3;goal_position.y()=-5;  // 目标位置 
           break;
-      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=-2;goal_position.y()=15;  // 目标位置 
           break;
-      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 4:goal_position.x()=12;goal_position.y()=-9;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
@@ -409,74 +421,123 @@ Vector2d MovingCylinder::update1(double delta) {
     vector<Vector2d> obstacles;
     /**
      * 判断动态障碍物的个数，设置合理个数的障碍物坐标
+     * obs_static_positong_exchange
      */
+    
+    // switch (dynamic_number)
+    // {
+    //   case 1:
+    //     obstacles = {
+    //       Vector2d(-8.0, 0.0), 
+    //       Vector2d(0.0, 0.0), 
+    //       Vector2d(7.0, -3.0),
+    //       Vector2d(-5.0, 10.0), 
+    //       Vector2d(-8.0, -9.5)};  // 除动态障碍物本身外，还有0个动态障碍物
+    //       //obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+    //     break;
+    //   case 2:
+    //     obstacles = {
+    //       Vector2d(-8.0, 0.0), 
+    //       Vector2d(0.0, 0.0), 
+    //       Vector2d(7.0, -3.0),
+    //       Vector2d(-5.0, 10.0), 
+    //       Vector2d(-8.0, -9.5),
+    //       Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有1个动态障碍物
+    //     break;
+    //   case 3:
+    //     obstacles = {
+    //       Vector2d(-8.0, 0.0), 
+    //       Vector2d(0.0, 0.0), 
+    //       Vector2d(7.0, -3.0),
+    //       Vector2d(-5.0, 10.0), 
+    //       Vector2d(-8.0, -9.5),
+    //       Vector2d(matrix[1][0],matrix[1][1]),
+    //       Vector2d(matrix[2][0],matrix[2][1])};  // 除动态障碍物本身外，还有3个动态障碍物
+    //     break;
+    //    case 4:
+    //     obstacles = {
+    //       Vector2d(-8.0, 0.0), 
+    //       Vector2d(0.0, 0.0), 
+    //       Vector2d(7.0, -3.0),
+    //       Vector2d(-5.0, 10.0), 
+    //       Vector2d(-8.0, -9.5),
+    //       Vector2d(matrix[1][0],matrix[1][1]),
+    //       Vector2d(matrix[2][0],matrix[2][1]),
+    //       Vector2d(matrix[3][0],matrix[3][1])
+    //       };  // 除动态障碍物本身外，还有3个动态障碍物
+    //     break;
+    //   case 5:
+    //     obstacles = {
+    //       Vector2d(-8.0, 0.0), 
+    //       Vector2d(0.0, 0.0), 
+    //       Vector2d(7.0, -3.0),
+    //       Vector2d(-5.0, 10.0), 
+    //       Vector2d(-8.0, -9.5),
+    //       Vector2d(matrix[1][0],matrix[1][1]),
+    //       Vector2d(matrix[2][0],matrix[2][1]),
+    //       Vector2d(matrix[3][0],matrix[3][1]),
+    //       Vector2d(matrix[4][0],matrix[4][1])
+    //       };  // 除动态障碍物本身外，还有4个动态障碍物
+    //     break;
+    //   case 6:
+    //     obstacles = {
+    //       Vector2d(-8.0, 0.0), 
+    //       Vector2d(0.0, 0.0), 
+    //       Vector2d(7.0, -3.0),
+    //       Vector2d(-5.0, 10.0), 
+    //       Vector2d(-8.0, -9.5),
+    //       Vector2d(matrix[1][0],matrix[1][1]),
+    //       Vector2d(matrix[2][0],matrix[2][1]),
+    //       Vector2d(matrix[3][0],matrix[3][1]),
+    //       Vector2d(matrix[4][0],matrix[4][1]),
+    //       Vector2d(matrix[5][0],matrix[5][1])
+    //       };  // 除动态障碍物本身外，还有4个动态障碍物
+    //     break;
+    //   default:break;
+    // }
     switch (dynamic_number)
     {
       case 1:
-        obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5)};  // 除动态障碍物本身外，还有0个动态障碍物
+        obstacles = obs_static_positong_exchange();
+          //obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 2:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有1个动态障碍物
+          obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
         break;
       case 3:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1])};  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
         break;
        case 4:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+       obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
         break;
       case 5:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+       obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
         break;
       case 6:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1]),
           Vector2d(matrix[5][0],matrix[5][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+       obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
         break;
       default:break;
     }
@@ -570,9 +631,9 @@ Vector2d MovingCylinder::update1(double delta) {
           break;
       case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=-3;goal_position.y()=10;  // 目标位置 
           break;
-      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 4:goal_position.x()=4;goal_position.y()=15;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
@@ -739,11 +800,11 @@ Vector2d MovingCylinder::update1(double delta) {
     {
       case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 2:goal_position.x()=7;goal_position.y()=3;  // 目标位置 
           break;
-      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=-3;goal_position.y()=5;  // 目标位置 
           break;
-      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 4:goal_position.x()=6;goal_position.y()=-7;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
@@ -907,13 +968,13 @@ Vector2d MovingCylinder::update1(double delta) {
     Vector2d goal_position(0.0,10.0);
     switch (count_position)
     {
-      case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+      case 1:goal_position.x()=-0;goal_position.y()=-7;  // 目标位置 
           break;
       case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=2;goal_position.y()=-5;  // 目标位置 
           break;
-      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 4:goal_position.x()=8;goal_position.y()=15;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
@@ -1078,13 +1139,13 @@ Vector2d MovingCylinder::update1(double delta) {
     Vector2d goal_position(0.0,10.0);
     switch (count_position)
     {
-      case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+      case 1:goal_position.x()=-12;goal_position.y()=5;  // 目标位置 
           break;
       case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=1;goal_position.y()=15;  // 目标位置 
           break;
-      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 4:goal_position.x()=12;goal_position.y()=-5;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;

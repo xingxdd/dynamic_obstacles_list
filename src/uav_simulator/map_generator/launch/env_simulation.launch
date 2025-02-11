@@ -5,9 +5,9 @@
 	<arg name="map_size_x" default="15"/>
 	<arg name="map_size_y" default="15"/>
 	<arg name="map_size_z" default="7"/>
-    <arg name="obs_num" default="6" /> <!--动态障碍物的数量-->
+    <arg name="obs_num" default="6" /> <!--动态障碍物的数量-->  <!--max <= 6-->
     <arg name="map_mode" default="0" /> <!-- 0: pure, 1: mixed -->
-    
+    <arg name="abc" default="5" />
 
     
     
@@ -32,6 +32,7 @@
 	<param if="$(eval arg('map_mode') == 1)" name="map/circle_num" value="$(eval arg('obs_num') / 2)" />
 	<param if="$(eval arg('map_mode') == 0)" name="map/circle_num" value="0" />
 
+    <param name="ObstacleShape/abc" value="$(arg abc)"   />
     <param name="ObstacleShape/lower_rad" value="0.5"/>
     <param name="ObstacleShape/upper_rad" value="1.0"/>
     <param name="ObstacleShape/lower_hei" value="4.0"/>
@@ -51,7 +52,7 @@
 
     <param name="StaticObstacle/use" value="true"/>
     <!-- 静态障碍物的设置 -->
-    <param name="StaticObstacle/static_nums" value="5"/>
+    <param name="StaticObstacle/static_nums" value="3"/>   <!--max <= 5-->
     <!-- 障碍物模式：random代表随机生成，fixed代表固定位置，该模式下将使用设置的数据生成静态障碍物 -->
     <param name="StaticObstacle/static_mode" value="fixed"/>
     <param name="StaticObstacle/lower_height" value="6.5"/>

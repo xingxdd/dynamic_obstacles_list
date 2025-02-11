@@ -57,10 +57,13 @@ enum class StaticMode {  //指定静态障碍物的生成模式
     RANDOM = 0,  //静态障碍物的位置是随机生成的
     FIXED = 1,   //静态障碍物的位置是固定的
 };
+
 /////////////////////////////////////////////////// start2.0 ///////////////////////////////////////////////////////////////////////////////////
 extern  Vector2d dynamic_count;
 extern int dynamic_number; //动态障碍物的数量
+extern int statci_number;//静态障碍物的数量
 extern double matrix[][2]; //提取每个动态障碍物的坐标，暂存
+extern double matrix_static_position[][2]; //提取每个静态障碍物的坐标，暂存
 /////////////////////////////////////////////////// end  2.0 ///////////////////////////////////////////////////////////////////////////////////
 
 vector<int>   pointIdxRadiusSearch;//半径搜索是一种常见的搜索方法，用于查找   给定点周围一定半径内的邻近点
@@ -428,8 +431,6 @@ void pubSensedPoints()
               case 4:dynamic_count=dyn_cld.update4(delta_time);break;
               case 5:dynamic_count=dyn_cld.update5(delta_time);break;
               case 6:dynamic_count=dyn_cld.update6(delta_time);break;
-              // case 5:dynamic_count=dyn_cld.update5(delta_time);break;
-              // case 6:dynamic_count=dyn_cld.update6(delta_time);break;
               default:break;
             }
 
@@ -709,10 +710,29 @@ int main(int argc, char** argv) {
     _static_mode = StaticMode::FIXED;
   }
   _fixed_pos.resize(_static_nums);
+
+
+  /**
+   * 静态障碍物坐标读取      重要
+   */
   for(int i = 1; i <= _static_nums; i++){
     n.param(string("StaticObstacle/obs_") + to_string(i) + "_x", _fixed_pos[i - 1](0), 0.0);
     n.param(string("StaticObstacle/obs_") + to_string(i) + "_y", _fixed_pos[i - 1](1), 0.0);
+
+
+    ///////////////////////////////////////    start  ///////////////////////////////////////////////////   
+    matrix_static_position[i-1][0]= _fixed_pos[i - 1](0);//读取静态障碍物坐标
+    matrix_static_position[i-1][1]= _fixed_pos[i - 1](1);
+    
+    ROS_INFO("ObstacleShape/obs_%d_x:%f", i,matrix_static_position[i-1][0]);
+    ROS_INFO("ObstacleShape/obs_%d_y:%f", i,matrix_static_position[i-1][1]);
+
+    ///////////////////////////////////////    end    ///////////////////////////////////////////////////   
+
   }
+
+
+
 
   n.param(string("StaticObstacle/lower_height"), _static_h_l, 0.5);
   n.param(string("StaticObstacle/upper_height"), _static_h_h, 2.5);
@@ -806,7 +826,30 @@ int main(int argc, char** argv) {
       调用 ros::spinOnce 处理回调函数。
       调用 loop_rate.sleep 保持循环频率。
    */
-  
+
+
+
+////////////////////////////test start////////////////////////////////////////////////////////////////
+    int abc;
+    if (n.param("ObstacleShape/abc", abc, 5)) // 默认值为5
+    {
+        ROS_INFO("ObstacleShape/abc is set to %d", abc);
+    }
+    else
+    {
+         abc = 6; // 设置默认值
+         ROS_INFO("ObstacleShape/abc is set to %d", abc);
+
+        
+    }
+
+      ROS_INFO("ObstacleShape/abc is set to %d", abc);
+////////////////////////////test end  ////////////////////////////////////////////////////////////////
+
+
+
+
+    
   while (ros::ok()) {
     // delete old cylinders in rviz
     // visualization_msgs::Marker delete_cylinders;
@@ -817,10 +860,7 @@ int main(int argc, char** argv) {
     // _all_map_cylinder_pub_vis.publish(cylinders_vis);
 
     // update map
-    
     pubSensedPoints();
-
-
 
     ros::spinOnce();
     loop_rate.sleep();
