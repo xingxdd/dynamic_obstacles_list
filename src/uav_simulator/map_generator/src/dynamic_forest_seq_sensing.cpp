@@ -418,13 +418,16 @@ void pubSensedPoints()
         if (!_test_mode) {
           /**
            * 根据障碍物的编号选择相应的updatei函数
+           * i：对应障碍物的编号
            */
-            switch (i+1)
+            switch (i+1) 
             {
               case 1:dynamic_count=dyn_cld.update1(delta_time);break;
               case 2:dynamic_count=dyn_cld.update2(delta_time);break;
               case 3:dynamic_count=dyn_cld.update3(delta_time);break;
               case 4:dynamic_count=dyn_cld.update4(delta_time);break;
+              case 5:dynamic_count=dyn_cld.update5(delta_time);break;
+              case 6:dynamic_count=dyn_cld.update6(delta_time);break;
               // case 5:dynamic_count=dyn_cld.update5(delta_time);break;
               // case 6:dynamic_count=dyn_cld.update6(delta_time);break;
               default:break;

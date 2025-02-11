@@ -110,6 +110,8 @@ class MovingCylinder {
   Vector2d update2(double delta);
   Vector2d update3(double delta);
   Vector2d update4(double delta);
+  Vector2d update5(double delta);
+  Vector2d update6(double delta);
 
   // 计算吸引力
   Vector2d calculate_attraction(const Vector2d& position, const Vector2d& goal, double attraction_coefficient) ;
@@ -241,34 +243,11 @@ Vector2d MovingCylinder::calculate_attraction(const Vector2d& position, const Ve
     return attraction;  // 返回计算得到的吸引力向量
 }
 
-// 计算斥力   初始的斥力函数
-// Vector2d MovingCylinder::calculate_repulsion(const Vector2d& position, const Vector2d& goal,const vector<Vector2d>& obstacles, double repulsion_coefficient, double repulsion_threshold) {
-//     Vector2d repulsion_force = Vector2d::Zero();
-//     Vector2d rep1 = Vector2d::Zero();
-//     Vector2d rep2 = Vector2d::Zero();
-//     int q=0;
-//     for (const auto& obstacle : obstacles) {
-//         double distance = (position - obstacle).norm();  // 计算当前位置到障碍物的欧几里得距离
-//         double distance_p_g = (position - goal).norm();  // 计算当前位置到目标位置的欧几里得距离
-//         if((position - goal).norm() <= 0.5)//如果物体到达目标点附近，则障碍物斥力为0
-//         {
-//              q=0;//标志位系数
-//         }
-//         else q=1;
-
-//         if (distance < repulsion_threshold) {  // 如果距离小于斥力作用范围
-//             Vector2d obstacle_vec = position - obstacle;
-//             repulsion_force += repulsion_coefficient * (1 / repulsion_threshold - 1 / distance) * (obstacle_vec / pow(distance, 3))*q;  // 计算当前位置到障碍物的向量
-            
-//         }
-//     }
-//     return repulsion_force;  // 返回计算得到的斥力向量
-// }
-
-// 计算斥力  优化后的斥力函数
+// 计算斥力   初始的简洁版斥力函数
 Vector2d MovingCylinder::calculate_repulsion(const Vector2d& position, const Vector2d& goal,const vector<Vector2d>& obstacles, double repulsion_coefficient, double repulsion_threshold) {
     Vector2d repulsion_force = Vector2d::Zero();
-    
+    Vector2d rep1 = Vector2d::Zero();
+    Vector2d rep2 = Vector2d::Zero();
     int q=0;
     for (const auto& obstacle : obstacles) {
         double distance = (position - obstacle).norm();  // 计算当前位置到障碍物的欧几里得距离
@@ -281,13 +260,36 @@ Vector2d MovingCylinder::calculate_repulsion(const Vector2d& position, const Vec
 
         if (distance < repulsion_threshold) {  // 如果距离小于斥力作用范围
             Vector2d obstacle_vec = position - obstacle;
-            Vector2d rep1 = repulsion_coefficient * (1 / repulsion_threshold - 1 / distance) * (obstacle_vec / pow(distance, 3))*q*distance_p_g;  // 计算当前位置到障碍物的向量
-            Vector2d rep2 = 1/2*repulsion_coefficient * pow((1 / repulsion_threshold - 1 / distance),2)* (obstacle_vec / distance)*q;  // 计算当前位置到障碍物的向量
-            repulsion_force+=rep1+rep2;
+            repulsion_force += repulsion_coefficient * (1 / repulsion_threshold - 1 / distance) * (obstacle_vec / pow(distance, 3))*q;  // 计算当前位置到障碍物的向量
+            
         }
     }
     return repulsion_force;  // 返回计算得到的斥力向量
 }
+
+// // 计算斥力  优化后的斥力函数
+// Vector2d MovingCylinder::calculate_repulsion(const Vector2d& position, const Vector2d& goal,const vector<Vector2d>& obstacles, double repulsion_coefficient, double repulsion_threshold) {
+//     Vector2d repulsion_force = Vector2d::Zero();
+    
+//     int q=0;
+//     for (const auto& obstacle : obstacles) {
+//         double distance = (position - obstacle).norm();  // 计算当前位置到障碍物的欧几里得距离
+//         double distance_p_g = (position - goal).norm();  // 计算当前位置到目标位置的欧几里得距离
+//         if((position - goal).norm() <= 0.5)//如果物体到达目标点附近，则障碍物斥力为0
+//         {
+//              q=0;//标志位系数
+//         }
+//         else q=1;
+
+//         if (distance < repulsion_threshold) {  // 如果距离小于斥力作用范围
+//             Vector2d obstacle_vec = position - obstacle;
+//             Vector2d rep1 = repulsion_coefficient * (1 / repulsion_threshold - 1 / distance) * (obstacle_vec / pow(distance, 3))*q*distance_p_g;  // 计算当前位置到障碍物的向量
+//             Vector2d rep2 = 1/2*repulsion_coefficient * pow((1 / repulsion_threshold - 1 / distance),2)* (obstacle_vec / distance)*q;  // 计算当前位置到障碍物的向量
+//             repulsion_force+=rep1+rep2;
+//         }
+//     }
+//     return repulsion_force;  // 返回计算得到的斥力向量
+// }
 
 
 Vector2d MovingCylinder::update(double delta) {
@@ -435,7 +437,7 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(-5.0, 10.0), 
           Vector2d(-8.0, -9.5),
           Vector2d(matrix[1][0],matrix[1][1]),
-          Vector2d(matrix[2][0],matrix[2][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+          Vector2d(matrix[2][0],matrix[2][1])};  // 除动态障碍物本身外，还有3个动态障碍物
         break;
        case 4:
         obstacles = {
@@ -447,7 +449,34 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
-          };  // 除动态障碍物本身外，还有2个动态障碍物
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break;
+      case 5:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[4][0],matrix[4][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
+        break;
+      case 6:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[4][0],matrix[4][1]),
+          Vector2d(matrix[5][0],matrix[5][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
         break;
       default:break;
     }
@@ -593,7 +622,34 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
-          };  // 除动态障碍物本身外，还有2个动态障碍物
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break;
+      case 5:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[4][0],matrix[4][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
+        break;
+      case 6:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[4][0],matrix[4][1]),
+          Vector2d(matrix[5][0],matrix[5][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
         break;
       default:break;
     }
@@ -734,8 +790,35 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[3][0],matrix[3][1])
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break;
+      case 5:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
-          };  // 除动态障碍物本身外，还有2个动态障碍物
+          Vector2d(matrix[4][0],matrix[4][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
+        break;
+       case 6:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[4][0],matrix[4][1]),
+          Vector2d(matrix[5][0],matrix[5][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
         break;
       default:break;
     }
@@ -811,7 +894,7 @@ Vector2d MovingCylinder::update1(double delta) {
     return start_position_last;
   }
    /**
-   * 3号动态障碍物的更新函数
+   * 4号动态障碍物的更新函数
    */
   Vector2d MovingCylinder::update4(double delta) {
    
@@ -880,6 +963,376 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(matrix[2][0],matrix[2][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
         break;
+      case 5:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[4][0],matrix[4][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
+        break;
+      case 6:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[4][0],matrix[4][1]),
+          Vector2d(matrix[5][0],matrix[5][1])
+          };  // 除动态障碍物本身外，还有5个动态障碍物
+        break;
+      default:break;
+    }
+ 
+    
+    vector<Vector2d> path;  // 路径记录
+    Vector2d position = start_position;  // 初始化机器人当前位置为起始位置
+ 
+    // 路径规划
+    if(a>1) {
+      position.x()=start_position_last[0];
+      position.y()=start_position_last[1];
+    }
+
+    path.push_back(start_position);  // 添加初始位置到路径记录
+  
+    // 计算吸引力：从当前位置到目标位置的吸引力
+    Vector2d attraction = calculate_attraction(position, goal_position, attraction_coefficient);
+
+    // 计算斥力：从当前位置到所有障碍物的斥力
+    // Vector2d repulsion = calculate_repulsion(position, obstacles, repulsion_coefficient, repulsion_threshold);
+    Vector2d repulsion=calculate_repulsion(position, goal_position, obstacles, repulsion_coefficient, repulsion_threshold) ;
+    // 合成总力：吸引力减去斥力
+    Vector2d force = attraction - repulsion;
+
+  
+    /**
+     * 生成随机数
+     */
+    srand(time(NULL));
+    double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
+    double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
+    Vector2d perturbation(ax, ay);
+    printf("随机数%f",ax);
+    printf("随机数%f\n",ay);
+
+    position += step_size * (force.normalized()+Vector2d(ax, ay));
+
+     start_position_last[0]=position.x();
+     start_position_last[1]=position.y();
+     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+
+     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+      
+    if ((position - goal_position).norm() <= 0.5) 
+    {
+      ROS_INFO("抵达目标点%d",count_position);
+      count_position+=1;
+    }
+    
+    // 计算点云的变换矩阵，用于将点云从上一位置变换到当前位置
+    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
+    
+    // 对点云进行变换
+    pcl::transformPointCloud(_cloud, _cloud, transform);
+
+    // // 更新上一位置信息
+    last_x = start_position_last[0];
+    last_y = start_position_last[1];
+    
+
+    // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
+    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    ROS_INFO("delta: %f", delta);  // 
+    ROS_INFO("前往目标点%d ing",count_position);
+    ROS_INFO("-----------------------------------------------------");
+
+    return start_position_last;
+  }
+
+
+   /**
+   * 5号动态障碍物的更新函数
+   */
+  Vector2d MovingCylinder::update5(double delta) {
+   
+    a=a+1;//进入函数的次数
+    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+
+    /**
+     * 目标点更迭 
+     */
+    Vector2d goal_position(0.0,10.0);
+    switch (count_position)
+    {
+      case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+          break;
+      case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+          break;
+      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+          break;
+      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+          break;
+      default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+          break;
+    }
+
+    Vector2d start_position(-1.0, -5.0);  // 初始位置
+    vector<Vector2d> obstacles;
+
+    switch (dynamic_number)
+    {
+      case 1:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5)};  // 不执行
+        break;
+      case 2:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1])};  // 不执行
+        break;
+      case 3:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+        break;
+      case 4:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
+        break;
+        case 5:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1])
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break;
+      case 6:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[5][0],matrix[5][1])
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break; 
+      default:break;
+    }
+ 
+    
+    vector<Vector2d> path;  // 路径记录
+    Vector2d position = start_position;  // 初始化机器人当前位置为起始位置
+ 
+    // 路径规划
+    if(a>1) {
+      position.x()=start_position_last[0];
+      position.y()=start_position_last[1];
+    }
+
+    path.push_back(start_position);  // 添加初始位置到路径记录
+  
+    // 计算吸引力：从当前位置到目标位置的吸引力
+    Vector2d attraction = calculate_attraction(position, goal_position, attraction_coefficient);
+
+    // 计算斥力：从当前位置到所有障碍物的斥力
+    // Vector2d repulsion = calculate_repulsion(position, obstacles, repulsion_coefficient, repulsion_threshold);
+    Vector2d repulsion=calculate_repulsion(position, goal_position, obstacles, repulsion_coefficient, repulsion_threshold) ;
+    // 合成总力：吸引力减去斥力
+    Vector2d force = attraction - repulsion;
+
+  
+    /**
+     * 生成随机数
+     */
+    srand(time(NULL));
+    double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
+    double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
+    Vector2d perturbation(ax, ay);
+    printf("随机数%f",ax);
+    printf("随机数%f\n",ay);
+
+    position += step_size * (force.normalized()+Vector2d(ax, ay));
+
+     start_position_last[0]=position.x();
+     start_position_last[1]=position.y();
+     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+
+     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+      
+    if ((position - goal_position).norm() <= 0.5) 
+    {
+      ROS_INFO("抵达目标点%d",count_position);
+      count_position+=1;
+    }
+    
+    // 计算点云的变换矩阵，用于将点云从上一位置变换到当前位置
+    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
+    
+    // 对点云进行变换
+    pcl::transformPointCloud(_cloud, _cloud, transform);
+
+    // // 更新上一位置信息
+    last_x = start_position_last[0];
+    last_y = start_position_last[1];
+    
+
+    // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
+    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    ROS_INFO("delta: %f", delta);  // 
+    ROS_INFO("前往目标点%d ing",count_position);
+    ROS_INFO("-----------------------------------------------------");
+
+    return start_position_last;
+  }
+
+  
+
+    /**
+   * 6号动态障碍物的更新函数
+   */
+  Vector2d MovingCylinder::update6(double delta) {
+   
+    a=a+1;//进入函数的次数
+    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+
+    /**
+     * 目标点更迭 
+     */
+    Vector2d goal_position(0.0,10.0);
+    switch (count_position)
+    {
+      case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+          break;
+      case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+          break;
+      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+          break;
+      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+          break;
+      default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+          break;
+    }
+
+    Vector2d start_position(-1.0, -5.0);  // 初始位置
+    vector<Vector2d> obstacles;
+
+    switch (dynamic_number)
+    {
+      case 1:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5)};  // 不执行
+        break;
+      case 2:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1])};  // 不执行
+        break;
+      case 3:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+        break;
+      case 4:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1])
+          };  // 除动态障碍物本身外，还有4个动态障碍物
+        break;
+        case 5:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1])
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break;
+      case 6:
+        obstacles = {
+          Vector2d(-8.0, 0.0), 
+          Vector2d(0.0, 0.0), 
+          Vector2d(7.0, -3.0),
+          Vector2d(-5.0, 10.0), 
+          Vector2d(-8.0, -9.5),
+          Vector2d(matrix[0][0],matrix[0][1]),
+          Vector2d(matrix[1][0],matrix[1][1]),
+          Vector2d(matrix[2][0],matrix[2][1]),
+          Vector2d(matrix[3][0],matrix[3][1]),
+          Vector2d(matrix[4][0],matrix[4][1])
+          };  // 除动态障碍物本身外，还有3个动态障碍物
+        break; 
       default:break;
     }
  

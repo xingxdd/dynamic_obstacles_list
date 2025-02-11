@@ -5,7 +5,7 @@
 	<arg name="map_size_x" default="15"/>
 	<arg name="map_size_y" default="15"/>
 	<arg name="map_size_z" default="7"/>
-    <arg name="obs_num" default="4" /> <!--动态障碍物的数量-->
+    <arg name="obs_num" default="6" /> <!--动态障碍物的数量-->
     <arg name="map_mode" default="0" /> <!-- 0: pure, 1: mixed -->
     
 

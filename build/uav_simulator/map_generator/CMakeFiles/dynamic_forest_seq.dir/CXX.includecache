@@ -6,6 +6,24 @@
 
 #IncludeRegexTransform: 
 
+/home/wjh/sim_env202502011611/devel/include/map_generator/ObjectTpyeArray.h
+string
+-
+vector
+-
+memory
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+std_msgs/Header.h
+-
+
 /home/wjh/sim_env202502011611/src/uav_simulator/map_generator/include/moving_circle.h
 pcl/common/transforms.h
 -
