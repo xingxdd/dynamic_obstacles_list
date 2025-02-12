@@ -34,7 +34,7 @@ Vector2d dynamic_count={0.0,0.0};//单个动态障碍物的坐标信息，暂存
 int dynamic_number=0; //动态障碍物的数量
 int static_number=0;//静态障碍物的数量
 double matrix[6][2]={0.0};//各动态障碍物的坐标存储
-double matrix_static_position[6][2]={0.0};//多静态障碍物的位置坐标
+double matrix_static_position[6][2]={0};//多静态障碍物的位置坐标
 ///////////////////////////////////////////////////// end 1.0/////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -112,7 +112,7 @@ class MovingCylinder {
   Vector2d update5(double delta);
   Vector2d update6(double delta);
   
-  vector<Vector2d> obs_static_positong_exchange(); //静态坐标变换
+  vector<Vector2d> obs_static_position_exchange(double matrix_static_position[6][2]); //静态坐标变换
 
   // 计算吸引力
   Vector2d calculate_attraction(const Vector2d& position, const Vector2d& goal, double attraction_coefficient) ;
@@ -237,17 +237,38 @@ void MovingCylinder::setMode(int m) {
 
 
 //////////////////////////////////////////////////start 4.0/////////////////////////////////////////////////////////////////////////////////////
-
-  vector<Vector2d> MovingCylinder::obs_static_positong_exchange() //静态坐标变换
+  
+  vector<Vector2d> MovingCylinder::obs_static_position_exchange(double matrix_static_position[6][2]) //静态坐标变换
   {
-    vector<Vector2d> obstacles;
-      for(int i=1;i<=static_number;i++)
-      {
-        obstacles.push_back(Vector2d(matrix_static_position[i-1][0],matrix_static_position[i-1][1]));
-      }
-    return obstacles;
+      std::vector<Vector2d> obstacles;
+        for (int i = 1; i <= static_number; i++)
+        {
+            Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+            obstacles.push_back(obstacle);
+
+            // 打印每个静态障碍物的坐标
+            ROS_INFO("Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        }
+        
+        return obstacles;
   }
 
+  // vector<Vector2d> MovingCylinder::obs_static_position_exchange(double matrix_static_position[6][2]) //静态坐标变换
+  // {
+  //   vector<Vector2d> obstacles;
+  //     for(int i=1;i<=static_number;i++)
+  //     {
+  //       obstacles.push_back(Vector2d(matrix_static_position[i-1][0],matrix_static_position[i-1][1]));
+  //     }
+  //     //打印观看内容
+  //      for (size_t i = 0; i < obstacles.size(); ++i) {
+  //       std::cout << "(" << obstacles[i](0) << ", " << obstacles[i](1) << ")" << std::endl;
+  //       ROS_INFO("静态障碍物的坐标信息x: %f", obstacles[i](0));  // 输出当前x坐标
+  //       ROS_INFO("静态障碍物的坐标信息y: %f", obstacles[i](1));  // 输出当前y坐标
+  //   }
+
+  //   return obstacles;
+  // }
 // 计算吸引力
 Vector2d MovingCylinder::calculate_attraction(const Vector2d& position, const Vector2d& goal, double attraction_coefficient) {
     double distance = (position - goal).norm();  // 计算当前位置到目标位置的欧几里得距离
@@ -307,7 +328,7 @@ Vector2d MovingCylinder::calculate_repulsion(const Vector2d& position, const Vec
 Vector2d MovingCylinder::update(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -358,11 +379,11 @@ Vector2d MovingCylinder::update(double delta) {
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -397,7 +418,7 @@ Vector2d MovingCylinder::update(double delta) {
 Vector2d MovingCylinder::update1(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -418,7 +439,7 @@ Vector2d MovingCylinder::update1(double delta) {
     }
 
     Vector2d start_position(-10.0, 10.0);  // 初始位置
-    vector<Vector2d> obstacles;
+    // vector<Vector2d> obstacles;
     /**
      * 判断动态障碍物的个数，设置合理个数的障碍物坐标
      * obs_static_positong_exchange
@@ -495,22 +516,38 @@ Vector2d MovingCylinder::update1(double delta) {
     //     break;
     //   default:break;
     // }
+////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
+    std::vector<Vector2d> obstacles ;
+    std::vector<Vector2d> obstacles1 ;
+    for (int i = 1; i <= static_number; i++)
+    {
+        Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+        obstacles1.push_back(obstacle);
+
+        // 打印每个静态障碍物的坐标
+        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+    }
+//////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
+
+
+
+
     switch (dynamic_number)
     {
       case 1:
-        obstacles = obs_static_positong_exchange();
-          //obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+        obstacles = {};// 除动态障碍物本身外，还有0个动态障碍物,不执行
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 2:
         obstacles = {
           Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有1个动态障碍物
-          obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
+         obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 3:
         obstacles = {
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1])};  // 除动态障碍物本身外，还有3个动态障碍物
-          obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
+         obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
        case 4:
         obstacles = {
@@ -518,7 +555,7 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
-       obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
+       obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 5:
         obstacles = {
@@ -527,7 +564,7 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
-       obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 6:
         obstacles = {
@@ -537,7 +574,7 @@ Vector2d MovingCylinder::update1(double delta) {
           Vector2d(matrix[4][0],matrix[4][1]),
           Vector2d(matrix[5][0],matrix[5][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
-       obstacles.insert(obstacles.end(), obs_static_positong_exchange().begin(), obs_static_positong_exchange().end());
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       default:break;
     }
@@ -572,18 +609,18 @@ Vector2d MovingCylinder::update1(double delta) {
     double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     Vector2d perturbation(ax, ay);
-    printf("随机数%f",ax);
-    printf("随机数%f\n",ay);
+    // printf("随机数%f",ax);
+    // printf("随机数%f\n",ay);
 
     position += step_size * (force.normalized()+Vector2d(ax, ay));
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -604,11 +641,11 @@ Vector2d MovingCylinder::update1(double delta) {
     
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
-    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
-    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
-    ROS_INFO("delta: %f", delta);  // 
-    ROS_INFO("前往目标点%d ing",count_position);
-    ROS_INFO("-----------------------------------------------------");
+    // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    // ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    // ROS_INFO("delta: %f", delta);  // 
+    // ROS_INFO("前往目标点%d ing",count_position);
+    // ROS_INFO("-----------------------------------------------------");
 
     return start_position_last;
   }
@@ -619,7 +656,7 @@ Vector2d MovingCylinder::update1(double delta) {
   Vector2d MovingCylinder::update2(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -629,92 +666,87 @@ Vector2d MovingCylinder::update1(double delta) {
     {
       case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 2:goal_position.x()=-3;goal_position.y()=-15;  // 目标位置 
           break;
       case 3:goal_position.x()=-3;goal_position.y()=10;  // 目标位置 
           break;
-      case 4:goal_position.x()=4;goal_position.y()=15;  // 目标位置 
+      case 4:goal_position.x()=4;goal_position.y()=6;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
     }
 
     Vector2d start_position(8.0, 10.0);  // 初始位置
-     vector<Vector2d> obstacles;
+
+
+////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
+    std::vector<Vector2d> obstacles ;
+    std::vector<Vector2d> obstacles1 ;
+    for (int i = 1; i <= static_number; i++)
+    {
+        Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+        obstacles1.push_back(obstacle);
+
+        // 打印每个静态障碍物的坐标
+        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+    }
+//////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
+
+
+
     /**
      * 判断动态障碍物的个数，设置合理个数的障碍物坐标
      */
     switch (dynamic_number)
     {
       case 1:
-        obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5)};  // 除动态障碍物本身外，还有0个动态障碍物,不执行
+        obstacles = {};// 除动态障碍物本身外，还有0个动态障碍物,不执行
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 2:
-        obstacles = {Vector2d(-8.0, 0.0), 
-        Vector2d(0.0, 0.0), 
-        Vector2d(7.0, -3.0),
-        Vector2d(-5.0, 10.0), 
-        Vector2d(-8.0, -9.5),
+        obstacles = {
         Vector2d(matrix[0][0],matrix[0][1])};  // 除动态障碍物本身外，还有1个动态障碍物
+         obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 3:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[2][0],matrix[2][1])       
           };  // 除动态障碍物本身外，还有2个动态障碍物
+           obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 4:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+           obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 5:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+           obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 6:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1]),
           Vector2d(matrix[5][0],matrix[5][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+           obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       default:break;
     }
-    
+   
+    ROS_INFO("障碍物的数量%d", obstacles.size());
+
     vector<Vector2d> path;  // 路径记录
     Vector2d position = start_position;  // 初始化机器人当前位置为起始位置
  
@@ -744,18 +776,18 @@ Vector2d MovingCylinder::update1(double delta) {
     double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     Vector2d perturbation(ax, ay);
-    printf("随机数%f",ax);
-    printf("随机数%f\n",ay);
+    // printf("随机数%f",ax);
+    // printf("随机数%f\n",ay);
 
     position += step_size * (force.normalized()+Vector2d(ax, ay));
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -776,11 +808,11 @@ Vector2d MovingCylinder::update1(double delta) {
     
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
-    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
-    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
-    ROS_INFO("delta: %f", delta);  // 
-    ROS_INFO("前往目标点%d ing",count_position);
-    ROS_INFO("-----------------------------------------------------");
+    // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    // ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    // ROS_INFO("delta: %f", delta);  // 
+    // ROS_INFO("前往目标点%d ing",count_position);
+    // ROS_INFO("-----------------------------------------------------");
 
     return start_position_last;
   }
@@ -790,7 +822,7 @@ Vector2d MovingCylinder::update1(double delta) {
   Vector2d MovingCylinder::update3(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -798,7 +830,7 @@ Vector2d MovingCylinder::update1(double delta) {
     Vector2d goal_position(0.0,10.0);
     switch (count_position)
     {
-      case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
+      case 1:goal_position.x()=-1;goal_position.y()=-15;  // 目标位置 
           break;
       case 2:goal_position.x()=7;goal_position.y()=3;  // 目标位置 
           break;
@@ -811,75 +843,64 @@ Vector2d MovingCylinder::update1(double delta) {
     }
 
     Vector2d start_position(10.0, 10.0);  // 初始位置
-     vector<Vector2d> obstacles;
+    ////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
+    std::vector<Vector2d> obstacles ;
+    std::vector<Vector2d> obstacles1 ;
+    for (int i = 1; i <= static_number; i++)
+    {
+        Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+        obstacles1.push_back(obstacle);
+
+        // 打印每个静态障碍物的坐标
+        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+    }
+  /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
+
+
 
     switch (dynamic_number)
     {
       case 1:
-        obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5)};  // 不执行
+        obstacles = {};// 除动态障碍物本身外，还有0个动态障碍物,不执行
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 2:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1])};  // 不执行
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 3:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 4:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[3][0],matrix[3][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       case 5:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
        case 6:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1]),
           Vector2d(matrix[5][0],matrix[5][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break;
       default:break;
     }
@@ -914,18 +935,18 @@ Vector2d MovingCylinder::update1(double delta) {
     double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     Vector2d perturbation(ax, ay);
-    printf("随机数%f",ax);
-    printf("随机数%f\n",ay);
+    // printf("随机数%f",ax);
+    // printf("随机数%f\n",ay);
 
     position += step_size * (force.normalized()+Vector2d(ax, ay));
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -946,11 +967,11 @@ Vector2d MovingCylinder::update1(double delta) {
     
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
-    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
-    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
-    ROS_INFO("delta: %f", delta);  // 
-    ROS_INFO("前往目标点%d ing",count_position);
-    ROS_INFO("-----------------------------------------------------");
+    // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    // ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    // ROS_INFO("delta: %f", delta);  // 
+    // ROS_INFO("前往目标点%d ing",count_position);
+    // ROS_INFO("-----------------------------------------------------");
 
     return start_position_last;
   }
@@ -960,7 +981,7 @@ Vector2d MovingCylinder::update1(double delta) {
   Vector2d MovingCylinder::update4(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -974,82 +995,76 @@ Vector2d MovingCylinder::update1(double delta) {
           break;
       case 3:goal_position.x()=2;goal_position.y()=-5;  // 目标位置 
           break;
-      case 4:goal_position.x()=8;goal_position.y()=15;  // 目标位置 
+      case 4:goal_position.x()=9;goal_position.y()=15;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
     }
 
     Vector2d start_position(-5.0, -5.0);  // 初始位置
-    vector<Vector2d> obstacles;
+    ////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
+    std::vector<Vector2d> obstacles ;
+    std::vector<Vector2d> obstacles1 ;
+    for (int i = 1; i <= static_number; i++)
+    {
+        Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+        obstacles1.push_back(obstacle);
+
+        // 打印每个静态障碍物的坐标
+        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+    }
+  /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
 
     switch (dynamic_number)
     {
       case 1:
-        obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5)};  // 不执行
+        obstacles = {};
+          // 不执行
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+      
         break;
       case 2:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1])};  // 不执行
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+          
         break;
       case 3:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+          
         break;
       case 4:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+      
         break;
       case 5:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[4][0],matrix[4][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+        
         break;
       case 6:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[4][0],matrix[4][1]),
           Vector2d(matrix[5][0],matrix[5][1])
           };  // 除动态障碍物本身外，还有5个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+          
         break;
       default:break;
     }
@@ -1083,18 +1098,18 @@ Vector2d MovingCylinder::update1(double delta) {
     double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     Vector2d perturbation(ax, ay);
-    printf("随机数%f",ax);
-    printf("随机数%f\n",ay);
+    // printf("随机数%f",ax);
+    // printf("随机数%f\n",ay);
 
     position += step_size * (force.normalized()+Vector2d(ax, ay));
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -1115,11 +1130,11 @@ Vector2d MovingCylinder::update1(double delta) {
     
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
-    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
-    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
-    ROS_INFO("delta: %f", delta);  // 
-    ROS_INFO("前往目标点%d ing",count_position);
-    ROS_INFO("-----------------------------------------------------");
+    // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    // ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    // ROS_INFO("delta: %f", delta);  // 
+    // ROS_INFO("前往目标点%d ing",count_position);
+    // ROS_INFO("-----------------------------------------------------");
 
     return start_position_last;
   }
@@ -1131,7 +1146,7 @@ Vector2d MovingCylinder::update1(double delta) {
   Vector2d MovingCylinder::update5(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -1143,7 +1158,7 @@ Vector2d MovingCylinder::update1(double delta) {
           break;
       case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 3:goal_position.x()=1;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=1;goal_position.y()=-4;  // 目标位置 
           break;
       case 4:goal_position.x()=12;goal_position.y()=-5;  // 目标位置 
           break;
@@ -1152,75 +1167,72 @@ Vector2d MovingCylinder::update1(double delta) {
     }
 
     Vector2d start_position(-1.0, -5.0);  // 初始位置
-    vector<Vector2d> obstacles;
+
+    ////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
+    std::vector<Vector2d> obstacles ;
+    std::vector<Vector2d> obstacles1 ;
+    for (int i = 1; i <= static_number; i++)
+    {
+        Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+        obstacles1.push_back(obstacle);
+
+        // 打印每个静态障碍物的坐标
+        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+    }
+  /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
+
 
     switch (dynamic_number)
     {
       case 1:
-        obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5)};  // 不执行
+        obstacles = {};  // 不执行
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
         break;
       case 2:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1])};  // 不执行
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
         break;
       case 3:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
         break;
       case 4:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
         break;
         case 5:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
+
         break;
       case 6:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[5][0],matrix[5][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
+
         break; 
       default:break;
     }
@@ -1254,18 +1266,18 @@ Vector2d MovingCylinder::update1(double delta) {
     double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     Vector2d perturbation(ax, ay);
-    printf("随机数%f",ax);
-    printf("随机数%f\n",ay);
+    // printf("随机数%f",ax);
+    // printf("随机数%f\n",ay);
 
     position += step_size * (force.normalized()+Vector2d(ax, ay));
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -1286,11 +1298,11 @@ Vector2d MovingCylinder::update1(double delta) {
     
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
-    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
-    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
-    ROS_INFO("delta: %f", delta);  // 
-    ROS_INFO("前往目标点%d ing",count_position);
-    ROS_INFO("-----------------------------------------------------");
+    // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    // ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    // ROS_INFO("delta: %f", delta);  // 
+    // ROS_INFO("前往目标点%d ing",count_position);
+    // ROS_INFO("-----------------------------------------------------");
 
     return start_position_last;
   }
@@ -1303,7 +1315,7 @@ Vector2d MovingCylinder::update1(double delta) {
   Vector2d MovingCylinder::update6(double delta) {
    
     a=a+1;//进入函数的次数
-    ROS_INFO("测试a: %d", a);  // 输出当前x坐标
+    // ROS_INFO("测试a: %d", a);  // 输出当前x坐标
 
     /**
      * 目标点更迭 
@@ -1313,86 +1325,82 @@ Vector2d MovingCylinder::update1(double delta) {
     {
       case 1:goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
-      case 2:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 2:goal_position.x()=7;goal_position.y()=-15;  // 目标位置 
           break;
-      case 3:goal_position.x()=-12;goal_position.y()=15;  // 目标位置 
+      case 3:goal_position.x()=-12;goal_position.y()=2;  // 目标位置 
           break;
-      case 4:goal_position.x()=12;goal_position.y()=-15;  // 目标位置 
+      case 4:goal_position.x()=-3;goal_position.y()=-15;  // 目标位置 
           break;
       default: count_position=1; goal_position.x()=-12;goal_position.y()=-15;  // 目标位置 
           break;
     }
 
     Vector2d start_position(-1.0, -5.0);  // 初始位置
-    vector<Vector2d> obstacles;
+        ////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
+    std::vector<Vector2d> obstacles ;
+    std::vector<Vector2d> obstacles1 ;
+    for (int i = 1; i <= static_number; i++)
+    {
+        Vector2d obstacle(matrix_static_position[i - 1][0], matrix_static_position[i - 1][1]);
+        obstacles1.push_back(obstacle);
+
+        // 打印每个静态障碍物的坐标
+        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+    }
+  /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
+
 
     switch (dynamic_number)
     {
       case 1:
-        obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5)};  // 不执行
+        obstacles = {};  // 不执行
+        obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
         break;
       case 2:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1])};  // 不执行
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
+
         break;
       case 3:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有2个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
+
         break;
       case 4:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1])
           };  // 除动态障碍物本身外，还有4个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
+
         break;
         case 5:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
+
         break;
       case 6:
         obstacles = {
-          Vector2d(-8.0, 0.0), 
-          Vector2d(0.0, 0.0), 
-          Vector2d(7.0, -3.0),
-          Vector2d(-5.0, 10.0), 
-          Vector2d(-8.0, -9.5),
           Vector2d(matrix[0][0],matrix[0][1]),
           Vector2d(matrix[1][0],matrix[1][1]),
           Vector2d(matrix[2][0],matrix[2][1]),
           Vector2d(matrix[3][0],matrix[3][1]),
           Vector2d(matrix[4][0],matrix[4][1])
           };  // 除动态障碍物本身外，还有3个动态障碍物
+          obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
         break; 
       default:break;
     }
@@ -1426,18 +1434,18 @@ Vector2d MovingCylinder::update1(double delta) {
     double ax = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     double ay = ((double)rand() / RAND_MAX * 0.03 - 1.0)*0.01;
     Vector2d perturbation(ax, ay);
-    printf("随机数%f",ax);
-    printf("随机数%f\n",ay);
+    // printf("随机数%f",ax);
+    // printf("随机数%f\n",ay);
 
     position += step_size * (force.normalized()+Vector2d(ax, ay));
 
      start_position_last[0]=position.x();
      start_position_last[1]=position.y();
-     ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
-     ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
+    //  ROS_INFO("position坐标x: %f", position.x());  // 输出当前x坐标
+    //  ROS_INFO("position坐标y: %f", position.y());  // 输出当前y坐标
 
-     ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
-     ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
+    //  ROS_INFO("start_position_last坐标x: %f", start_position_last.x());  // 输出当前x坐标
+    //  ROS_INFO("start_position_last坐标y: %f", start_position_last.y());  // 输出当前y坐标
       
     if ((position - goal_position).norm() <= 0.5) 
     {
@@ -1458,11 +1466,11 @@ Vector2d MovingCylinder::update1(double delta) {
     
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
-    ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
-    ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
-    ROS_INFO("delta: %f", delta);  // 
-    ROS_INFO("前往目标点%d ing",count_position);
-    ROS_INFO("-----------------------------------------------------");
+    // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
+    // ROS_INFO("坐标y: %f", y);  // 输出当前y坐标
+    // ROS_INFO("delta: %f", delta);  // 
+    // ROS_INFO("前往目标点%d ing",count_position);
+    // ROS_INFO("-----------------------------------------------------");
 
     return start_position_last;
   }

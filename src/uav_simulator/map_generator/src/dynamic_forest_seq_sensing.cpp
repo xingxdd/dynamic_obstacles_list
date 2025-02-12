@@ -61,7 +61,7 @@ enum class StaticMode {  //指定静态障碍物的生成模式
 /////////////////////////////////////////////////// start2.0 ///////////////////////////////////////////////////////////////////////////////////
 extern  Vector2d dynamic_count;
 extern int dynamic_number; //动态障碍物的数量
-extern int statci_number;//静态障碍物的数量
+extern int static_number;//静态障碍物的数量
 extern double matrix[][2]; //提取每个动态障碍物的坐标，暂存
 extern double matrix_static_position[][2]; //提取每个静态障碍物的坐标，暂存
 /////////////////////////////////////////////////// end  2.0 ///////////////////////////////////////////////////////////////////////////////////
@@ -438,20 +438,20 @@ void pubSensedPoints()
             // dyn_cld.update(delta_time);
         }
         dynamic_number=_dyn_cylinders.size();
-        ROS_INFO("动态障碍物的个数: %d", dynamic_number);
+        // ROS_INFO("动态障碍物的个数: %d", dynamic_number);
   ///////////////////////////// end   1 ///////////////////////////////////////
-    ROS_INFO("动态障碍额1的坐标: %f", matrix[0][0]);
-    ROS_INFO("动态障碍额1的坐标: %f", matrix[0][1]);
-    ROS_INFO("动态障碍额2的坐标: %f", matrix[1][0]);
-    ROS_INFO("动态障碍额2的坐标: %f", matrix[1][1]);
+    // ROS_INFO("动态障碍额1的坐标: %f", matrix[0][0]);
+    // ROS_INFO("动态障碍额1的坐标: %f", matrix[0][1]);
+    // ROS_INFO("动态障碍额2的坐标: %f", matrix[1][0]);
+    // ROS_INFO("动态障碍额2的坐标: %f", matrix[1][1]);
     cloud_all += dyn_cld._cloud;
 
     // publish cylinder markerss
     geometry_msgs::Pose obs_pose;
     obs_pose.position.x = dyn_cld.x;
     obs_pose.position.y = dyn_cld.y;
-    ROS_INFO("点云坐标x: %f", dynamic_count.x());
-    ROS_INFO("点云坐标y: %f", dynamic_count.y());
+    // ROS_INFO("点云坐标x: %f", dynamic_count.x());
+    // ROS_INFO("点云坐标y: %f", dynamic_count.y());
     matrix[i][0]=dynamic_count.x();
     matrix[i][1]=dynamic_count.y();
 
@@ -700,6 +700,7 @@ int main(int argc, char** argv) {
   n.param("StaticObstacle/use", _use_static_obs, true);
   n.param("StaticObstacle/static_nums", _static_nums, 5);
   string staticmode = "";
+  static_number=_static_nums;
   n.param("StaticObstacle/static_mode", staticmode, string("random"));
   if(staticmode == "random"){
     _static_mode = StaticMode::RANDOM;
@@ -731,7 +732,13 @@ int main(int argc, char** argv) {
 
   }
 
+    ///////////////////////////////////////    start  ///////////////////////////////////////////////////   
 
+  for (int i = 0; i < _static_nums; i++)
+  {
+      ROS_INFO("axcccc %d: (%f, %f)", i + 1, matrix_static_position[i][0], matrix_static_position[i][1]);
+  }
+    ///////////////////////////////////////    end    ///////////////////////////////////////////////////   
 
 
   n.param(string("StaticObstacle/lower_height"), _static_h_l, 0.5);
@@ -794,6 +801,23 @@ int main(int argc, char** argv) {
   obstacle_state.color.b         = 0.0;
   obstacle_state.color.a         = 0.6;
 
+////////////////////////////test start////////////////////////////////////////////////////////////////
+    int abc;
+    if (n.param("ObstacleShape/abc", abc, 5)) // 默认值为5
+    {
+        ROS_INFO("ObstacleShape/abc is set to %d", abc);
+    }
+    else
+    {
+         abc = 6; // 设置默认值
+         ROS_INFO("ObstacleShape/abc is set to %d", abc);
+
+        
+    }
+
+      ROS_INFO("ObstacleShape/abc is set to %d", abc);
+////////////////////////////test end  ////////////////////////////////////////////////////////////////
+
   /**
    * 11.生成随机数和噪声分布
    * 
@@ -826,30 +850,8 @@ int main(int argc, char** argv) {
       调用 ros::spinOnce 处理回调函数。
       调用 loop_rate.sleep 保持循环频率。
    */
+  // MovingCylinder sta;//声明类
 
-
-
-////////////////////////////test start////////////////////////////////////////////////////////////////
-    int abc;
-    if (n.param("ObstacleShape/abc", abc, 5)) // 默认值为5
-    {
-        ROS_INFO("ObstacleShape/abc is set to %d", abc);
-    }
-    else
-    {
-         abc = 6; // 设置默认值
-         ROS_INFO("ObstacleShape/abc is set to %d", abc);
-
-        
-    }
-
-      ROS_INFO("ObstacleShape/abc is set to %d", abc);
-////////////////////////////test end  ////////////////////////////////////////////////////////////////
-
-
-
-
-    
   while (ros::ok()) {
     // delete old cylinders in rviz
     // visualization_msgs::Marker delete_cylinders;
@@ -861,6 +863,7 @@ int main(int argc, char** argv) {
 
     // update map
     pubSensedPoints();
+
 
     ros::spinOnce();
     loop_rate.sleep();

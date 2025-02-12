@@ -60,10 +60,10 @@ target_link_libraries(talker
   ${PCL_LIBRARIES})
 
 
-add_executable(test src/test.cpp)
-target_link_libraries(test
-  ${catkin_LIBRARIES}
-  ${PCL_LIBRARIES})  
+# add_executable(test2 src/test2.cpp)
+# target_link_libraries(test2
+#   ${catkin_LIBRARIES}
+#   ${PCL_LIBRARIES})  
     # add_executable(listener src/listener.cpp)
     # target_link_libraries(listener
     #   ${catkin_LIBRARIES}

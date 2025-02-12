@@ -80,7 +80,9 @@
         "variant": "cpp",
         "bit": "cpp",
         "core": "cpp",
-        "geometry": "cpp"
+        "geometry": "cpp",
+        "*.ipp": "cpp",
+        "csignal": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true
 }

@@ -124,6 +124,17 @@ install/fast: preinstall/fast
 	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+
+.PHONY : test/fast
+
 # The main all target
 all: cmake_check_build_system
 	cd /home/wjh/sim_env202502011611/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/wjh/sim_env202502011611/build/CMakeFiles /home/wjh/sim_env202502011611/build/uav_simulator/map_generator/CMakeFiles/progress.marks
@@ -546,21 +557,6 @@ talker/fast:
 	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f uav_simulator/map_generator/CMakeFiles/talker.dir/build.make uav_simulator/map_generator/CMakeFiles/talker.dir/build
 .PHONY : talker/fast
 
-# Convenience name for target.
-uav_simulator/map_generator/CMakeFiles/test.dir/rule:
-	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f CMakeFiles/Makefile2 uav_simulator/map_generator/CMakeFiles/test.dir/rule
-.PHONY : uav_simulator/map_generator/CMakeFiles/test.dir/rule
-
-# Convenience name for target.
-test: uav_simulator/map_generator/CMakeFiles/test.dir/rule
-
-.PHONY : test
-
-# fast build rule for target.
-test/fast:
-	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f uav_simulator/map_generator/CMakeFiles/test.dir/build.make uav_simulator/map_generator/CMakeFiles/test.dir/build
-.PHONY : test/fast
-
 src/dynamic_forest_sensing.o: src/dynamic_forest_sensing.cpp.o
 
 .PHONY : src/dynamic_forest_sensing.o
@@ -669,33 +665,6 @@ src/talker.cpp.s:
 	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f uav_simulator/map_generator/CMakeFiles/talker.dir/build.make uav_simulator/map_generator/CMakeFiles/talker.dir/src/talker.cpp.s
 .PHONY : src/talker.cpp.s
 
-src/test.o: src/test.cpp.o
-
-.PHONY : src/test.o
-
-# target to build an object file
-src/test.cpp.o:
-	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f uav_simulator/map_generator/CMakeFiles/test.dir/build.make uav_simulator/map_generator/CMakeFiles/test.dir/src/test.cpp.o
-.PHONY : src/test.cpp.o
-
-src/test.i: src/test.cpp.i
-
-.PHONY : src/test.i
-
-# target to preprocess a source file
-src/test.cpp.i:
-	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f uav_simulator/map_generator/CMakeFiles/test.dir/build.make uav_simulator/map_generator/CMakeFiles/test.dir/src/test.cpp.i
-.PHONY : src/test.cpp.i
-
-src/test.s: src/test.cpp.s
-
-.PHONY : src/test.s
-
-# target to generate assembly for a file
-src/test.cpp.s:
-	cd /home/wjh/sim_env202502011611/build && $(MAKE) -f uav_simulator/map_generator/CMakeFiles/test.dir/build.make uav_simulator/map_generator/CMakeFiles/test.dir/src/test.cpp.s
-.PHONY : src/test.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -747,9 +716,6 @@ help:
 	@echo "... src/talker.o"
 	@echo "... src/talker.i"
 	@echo "... src/talker.s"
-	@echo "... src/test.o"
-	@echo "... src/test.i"
-	@echo "... src/test.s"
 .PHONY : help
 
 
