@@ -444,78 +444,6 @@ Vector2d MovingCylinder::update1(double delta) {
      * 判断动态障碍物的个数，设置合理个数的障碍物坐标
      * obs_static_positong_exchange
      */
-    
-    // switch (dynamic_number)
-    // {
-    //   case 1:
-    //     obstacles = {
-    //       Vector2d(-8.0, 0.0), 
-    //       Vector2d(0.0, 0.0), 
-    //       Vector2d(7.0, -3.0),
-    //       Vector2d(-5.0, 10.0), 
-    //       Vector2d(-8.0, -9.5)};  // 除动态障碍物本身外，还有0个动态障碍物
-    //       //obstacles.insert(obstacles.end(), obstacles1.begin(), obstacles1.end());
-    //     break;
-    //   case 2:
-    //     obstacles = {
-    //       Vector2d(-8.0, 0.0), 
-    //       Vector2d(0.0, 0.0), 
-    //       Vector2d(7.0, -3.0),
-    //       Vector2d(-5.0, 10.0), 
-    //       Vector2d(-8.0, -9.5),
-    //       Vector2d(matrix[1][0],matrix[1][1])};  // 除动态障碍物本身外，还有1个动态障碍物
-    //     break;
-    //   case 3:
-    //     obstacles = {
-    //       Vector2d(-8.0, 0.0), 
-    //       Vector2d(0.0, 0.0), 
-    //       Vector2d(7.0, -3.0),
-    //       Vector2d(-5.0, 10.0), 
-    //       Vector2d(-8.0, -9.5),
-    //       Vector2d(matrix[1][0],matrix[1][1]),
-    //       Vector2d(matrix[2][0],matrix[2][1])};  // 除动态障碍物本身外，还有3个动态障碍物
-    //     break;
-    //    case 4:
-    //     obstacles = {
-    //       Vector2d(-8.0, 0.0), 
-    //       Vector2d(0.0, 0.0), 
-    //       Vector2d(7.0, -3.0),
-    //       Vector2d(-5.0, 10.0), 
-    //       Vector2d(-8.0, -9.5),
-    //       Vector2d(matrix[1][0],matrix[1][1]),
-    //       Vector2d(matrix[2][0],matrix[2][1]),
-    //       Vector2d(matrix[3][0],matrix[3][1])
-    //       };  // 除动态障碍物本身外，还有3个动态障碍物
-    //     break;
-    //   case 5:
-    //     obstacles = {
-    //       Vector2d(-8.0, 0.0), 
-    //       Vector2d(0.0, 0.0), 
-    //       Vector2d(7.0, -3.0),
-    //       Vector2d(-5.0, 10.0), 
-    //       Vector2d(-8.0, -9.5),
-    //       Vector2d(matrix[1][0],matrix[1][1]),
-    //       Vector2d(matrix[2][0],matrix[2][1]),
-    //       Vector2d(matrix[3][0],matrix[3][1]),
-    //       Vector2d(matrix[4][0],matrix[4][1])
-    //       };  // 除动态障碍物本身外，还有4个动态障碍物
-    //     break;
-    //   case 6:
-    //     obstacles = {
-    //       Vector2d(-8.0, 0.0), 
-    //       Vector2d(0.0, 0.0), 
-    //       Vector2d(7.0, -3.0),
-    //       Vector2d(-5.0, 10.0), 
-    //       Vector2d(-8.0, -9.5),
-    //       Vector2d(matrix[1][0],matrix[1][1]),
-    //       Vector2d(matrix[2][0],matrix[2][1]),
-    //       Vector2d(matrix[3][0],matrix[3][1]),
-    //       Vector2d(matrix[4][0],matrix[4][1]),
-    //       Vector2d(matrix[5][0],matrix[5][1])
-    //       };  // 除动态障碍物本身外，还有4个动态障碍物
-    //     break;
-    //   default:break;
-    // }
 ////////////////////////////////////////////////start_xin/////////////////////////////////////////////////////////////////
     std::vector<Vector2d> obstacles ;
     std::vector<Vector2d> obstacles1 ;
@@ -525,12 +453,9 @@ Vector2d MovingCylinder::update1(double delta) {
         obstacles1.push_back(obstacle);
 
         // 打印每个静态障碍物的坐标
-        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        // ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
     }
 //////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
-
-
-
 
     switch (dynamic_number)
     {
@@ -628,17 +553,24 @@ Vector2d MovingCylinder::update1(double delta) {
       count_position+=1;
     }
     
+
     // 计算点云的变换矩阵，用于将点云从上一位置变换到当前位置
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
-    
+
+    //////////////////////箭头/////////////////////////////////////////////////////
+    _set_vx=start_position_last[0] -last_x;
+    _set_vy=start_position_last[1] -last_y;
+    //////////////////////箭头/////////////////////////////////////////////////////
+
+
     // 对点云进行变换
     pcl::transformPointCloud(_cloud, _cloud, transform);
 
     // // 更新上一位置信息
     last_x = start_position_last[0];
     last_y = start_position_last[1];
-    
+  
 
     // ros::Time cur_time = ros::Time::now();  // 获取当前时间，该行代码被注释掉了
     // ROS_INFO("坐标x: %f", x);  // 输出当前x坐标
@@ -688,7 +620,7 @@ Vector2d MovingCylinder::update1(double delta) {
         obstacles1.push_back(obstacle);
 
         // 打印每个静态障碍物的坐标
-        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        // ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
     }
 //////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
 
@@ -745,7 +677,7 @@ Vector2d MovingCylinder::update1(double delta) {
       default:break;
     }
    
-    ROS_INFO("障碍物的数量%d", obstacles.size());
+    // ROS_INFO("障碍物的数量%d", obstacles.size());
 
     vector<Vector2d> path;  // 路径记录
     Vector2d position = start_position;  // 初始化机器人当前位置为起始位置
@@ -799,6 +731,12 @@ Vector2d MovingCylinder::update1(double delta) {
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
     
+      //////////////////////箭头/////////////////////////////////////////////////////
+    _set_vx=start_position_last[0] -last_x;
+    _set_vy=start_position_last[1] -last_y;
+    //////////////////////箭头/////////////////////////////////////////////////////
+
+
     // 对点云进行变换
     pcl::transformPointCloud(_cloud, _cloud, transform);
 
@@ -852,7 +790,7 @@ Vector2d MovingCylinder::update1(double delta) {
         obstacles1.push_back(obstacle);
 
         // 打印每个静态障碍物的坐标
-        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        // ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
     }
   /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
 
@@ -958,6 +896,11 @@ Vector2d MovingCylinder::update1(double delta) {
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
     
+    //////////////////////箭头/////////////////////////////////////////////////////
+    _set_vx=start_position_last[0] -last_x;
+    _set_vy=start_position_last[1] -last_y;
+    //////////////////////箭头/////////////////////////////////////////////////////
+
     // 对点云进行变换
     pcl::transformPointCloud(_cloud, _cloud, transform);
 
@@ -1011,7 +954,7 @@ Vector2d MovingCylinder::update1(double delta) {
         obstacles1.push_back(obstacle);
 
         // 打印每个静态障碍物的坐标
-        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        // ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
     }
   /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
 
@@ -1120,7 +1063,10 @@ Vector2d MovingCylinder::update1(double delta) {
     // 计算点云的变换矩阵，用于将点云从上一位置变换到当前位置
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
-    
+    //////////////////////箭头/////////////////////////////////////////////////////
+    _set_vx=start_position_last[0] -last_x;
+    _set_vy=start_position_last[1] -last_y;
+    //////////////////////箭头/////////////////////////////////////////////////////
     // 对点云进行变换
     pcl::transformPointCloud(_cloud, _cloud, transform);
 
@@ -1177,7 +1123,7 @@ Vector2d MovingCylinder::update1(double delta) {
         obstacles1.push_back(obstacle);
 
         // 打印每个静态障碍物的坐标
-        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        // ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
     }
   /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
 
@@ -1288,7 +1234,12 @@ Vector2d MovingCylinder::update1(double delta) {
     // 计算点云的变换矩阵，用于将点云从上一位置变换到当前位置
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
-    
+
+    //////////////////////箭头/////////////////////////////////////////////////////
+    _set_vx=start_position_last[0] -last_x;
+    _set_vy=start_position_last[1] -last_y;
+    //////////////////////箭头/////////////////////////////////////////////////////
+
     // 对点云进行变换
     pcl::transformPointCloud(_cloud, _cloud, transform);
 
@@ -1345,7 +1296,7 @@ Vector2d MovingCylinder::update1(double delta) {
         obstacles1.push_back(obstacle);
 
         // 打印每个静态障碍物的坐标
-        ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
+        // ROS_INFO("xin_Static Obstacle %d: (%f, %f)", i, obstacle(0), obstacle(1));
     }
   /////////////////////////////////////////////// end_xin /////////////////////////////////////////////////////////////////
 
@@ -1456,7 +1407,12 @@ Vector2d MovingCylinder::update1(double delta) {
     // 计算点云的变换矩阵，用于将点云从上一位置变换到当前位置
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << start_position_last[0] -last_x, start_position_last[1] - last_y, 0;
-    
+
+    //////////////////////箭头/////////////////////////////////////////////////////
+    _set_vx=start_position_last[0] -last_x;
+    _set_vy=start_position_last[1] -last_y;
+    //////////////////////箭头/////////////////////////////////////////////////////
+
     // 对点云进行变换
     pcl::transformPointCloud(_cloud, _cloud, transform);
 
@@ -1479,3 +1435,4 @@ Vector2d MovingCylinder::update1(double delta) {
 }  // namespace dynamic_map_objects
 
 #endif  // __MOVING_CYLINDER_H__
+
