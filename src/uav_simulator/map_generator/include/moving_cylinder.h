@@ -1435,4 +1435,3 @@ Vector2d MovingCylinder::update1(double delta) {
 }  // namespace dynamic_map_objects
 
 #endif  // __MOVING_CYLINDER_H__
-

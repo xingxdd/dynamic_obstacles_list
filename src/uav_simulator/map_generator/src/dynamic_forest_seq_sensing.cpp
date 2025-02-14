@@ -446,7 +446,6 @@ void pubSensedPoints()
     // ROS_INFO("动态障碍额2的坐标: %f", matrix[1][1]);
     cloud_all += dyn_cld._cloud;
 
-
     // ROS_INFO("点云坐标x: %f", dynamic_count.x());
     // ROS_INFO("点云坐标y: %f", dynamic_count.y());
     matrix[i][0]=dynamic_count.x();
